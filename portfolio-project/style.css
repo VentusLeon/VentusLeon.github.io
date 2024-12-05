@@ -1,0 +1,19 @@
+#info {
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  text-align: center;
+  z-index: 100;
+  display: block;
+}
+
+.label {
+    background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent background */
+    padding: 8px;
+    border-radius: 4px;
+    color: black;
+    font-family: Arial, sans-serif;
+    pointer-events: auto;  /* Make clickable if needed */
+    max-width: 200px;
+    text-align: center;
+}
