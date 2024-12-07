@@ -22,21 +22,23 @@ let camera = new THREE.OrthographicCamera(
   1000                       // far
 );
 
-let flat_view_x = -0.5;
-let flat_view_y = 0.8;
-let flat_view_z = 0.4; // Even in orthographic, you need to set the Z position
+let flat_view_x = -0.61;
+let flat_view_y = 1.19;
+let flat_view_z = 1; // Even in orthographic, you need to set the Z position
 
 camera.position.set(flat_view_x, flat_view_y, flat_view_z);
 camera.lookAt(flat_view_x, flat_view_y, flat_view_z); // Look at the origin
+camera.zoom = 4.71;
+camera.updateProjectionMatrix();
 
-const zoomSpeed = 0.3;
+const zoomSpeed = 0.065;
 
 let textMesh = null;
 
 async function updateText() {
   scene.remove(textMesh);
-  textMesh = await createText3D('X: ' + flat_view_x.toFixed(2), 0xffffff, 0.5, 0.2);
-  textMesh.position.set(0, 1, 0);
+  textMesh = await createText3D('X: ' + flat_view_x.toFixed(2) + '\nY: ' + flat_view_y.toFixed(2) + '\nZoom: ' + camera.zoom.toFixed(2), 0xffffff, 0.5, 0.2);
+  textMesh.position.set(0, 3, 0);
   scene.add(textMesh);
 }
 
@@ -95,16 +97,17 @@ window.addEventListener('resize', () => {
 });
 
 // Handle arrow key movement
-let cameraSpeed = 0.1;
+let cameraSpeed = 0.055;
 window.addEventListener('keydown', (event) => {
   switch (event.key) {
     case 'z':
-      frustumSize = Math.max(0.5, frustumSize - zoomSpeed); // Prevent zooming too far in
-      updateCameraFrustum();
+      camera.zoom += zoomSpeed;
       break;
     case 'y':
-      frustumSize += zoomSpeed;
-      updateCameraFrustum();
+      camera.zoom -= zoomSpeed;
+      if(camera.zoom < 0.1) {
+        camera.zoom = 0.1;
+      }
       break;
     case 'ArrowUp':
       flat_view_y += cameraSpeed;
@@ -119,17 +122,9 @@ window.addEventListener('keydown', (event) => {
       flat_view_x += cameraSpeed;
       break;
   }
+  camera.updateProjectionMatrix();
   updateText();
 });
-
-function updateCameraFrustum() {
-  const aspect = window.innerWidth / window.innerHeight;
-  camera.left = -frustumSize * aspect / 2;
-  camera.right = frustumSize * aspect / 2;
-  camera.top = frustumSize / 2;
-  camera.bottom = -frustumSize / 2;
-  camera.updateProjectionMatrix();
-}
 
 // Animation loop
 function animate() {
